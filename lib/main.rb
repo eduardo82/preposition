@@ -1,4 +1,7 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
 
-puts "Hello World"
+require "preposition.rb"
+
+p = Preposition.new
+p.calculo_prepo

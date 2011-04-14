@@ -23,7 +23,8 @@ class Preposition
   end
 
   def tautologia?(vector)
-    for i in vector
+    aux = 0
+    for i in vector      
       if i == 'V'
         aux+=1
       end
@@ -37,7 +38,8 @@ class Preposition
   end
 
   def contradicao?(vector)
-    for i in vector
+    aux = 0
+    for i in vector      
       if i == 'F'
         aux+=1
       end
@@ -50,6 +52,7 @@ class Preposition
   end
 
   def factivel?(vector)
+    aux = 0
     for i in vector
       if i == 'V'
         aux+=1
@@ -72,7 +75,7 @@ class Preposition
     array7 = "( ~ w 3 ( r 3 q ) )" #( ~ w 3 )
     array8 = "( ( r 3 q ) 3 ~ w )" #( 3 ~ w )
 
-    $tab_token = array2.split
+    $tab_token = array3.split
     count=0
     i=0
     aux_tab = Array.new
@@ -86,18 +89,22 @@ class Preposition
           teste = $tab_token.slice!(count-4..count)
           count-= teste.size
           aux_tab[aux_count] = teste
+          calc_one_prepo(teste)
         elsif $tab_token[count-5] == '~' && $tab_token[count-3] =~ /[1-4]/  #If as duas letras são negativas
           teste = $tab_token.slice!(count-6..count)
           count-= teste.size
           aux_tab[aux_count] = teste
+          calc_one_prepo(teste)
         elsif $tab_token[count-4] == '~' && $tab_token[count-2] =~ /[1-4]/  && $tab_token[count-3]=~ /[a-zA-Z]/ #If primeira letra negativa e segunda letra é positiva
           teste = $tab_token.slice!(count-5..count)
           count-= teste.size
           aux_tab[aux_count] = teste
+          calc_one_prepo(teste)
         elsif $tab_token[count-5] == '(' && $tab_token[count-3] =~ /[1-4]/ && $tab_token[count-4]=~ /[a-zA-Z]/#If com segunda letra negativa e primeira positiva          
           teste = $tab_token.slice!(count-5..count)
           count-= teste.size
           aux_tab[aux_count] = teste
+          calc_one_prepo(teste)
         elsif $tab_token[count-1] =~ /[1-4]/ && $tab_token[count-4] == '(' && $tab_token[count-3]=='~'#If letra negativa e operacao a direita
           aux_conec[aux_conec_count] =  $tab_token[count-1]
           teste = $tab_token.slice!(count-4..count)
@@ -141,9 +148,10 @@ class Preposition
         count+=1
       end #end if (')')
     end #end while
-    puts("AUX_TAB -> #{aux_tab[1]}")
+    puts("AUX_TAB -> #{aux_tab}")
     puts("TABTOKEN -> #{$tab_token}")
     puts("AUX_CONEC -> #{aux_conec}")
+    
     if tautologia?(aux_tab[1])
       puts("TAUTOLOGIA")
     elsif contradicao?(aux_tab[1])
@@ -153,7 +161,62 @@ class Preposition
     end
   end
 
-  def prepo(prepos)
-
+  def calc_one_prepo(prepos)    
+    conectivo = nil
+    if prepos.length == 7
+      conectivo = prepos[3]
+      letra1 = false
+        letra2 = false
+      if (conectivo == 1)
+        and_table(letra1, letra2)
+      elsif (conectivo == 2)
+        or_table(letra1, letra2)
+      elsif (conectivo == 3)
+        if_table(letra1, letra2)
+      elsif (conectivo == 4)
+        only_if_table(letra1, letra2)
+      end
+    elsif prepos.length == 5
+      conectivo = prepos[2]
+      letra1 = true
+      letra2 = true
+      if (conectivo == 1)
+        and_table(letra1, letra2)
+      elsif (conectivo == 2)
+        or_table(letra1, letra2)
+      elsif (conectivo == 3)
+        if_table(letra1, letra2)
+      elsif (conectivo == 4)
+        only_if_table(letra1, letra2)
+      end
+    elsif prepos.length == 6
+      if (prepos[1] == "~")
+        conectivo = prepos[3]
+        letra1 = false
+        letra2 = true
+        if (conectivo == 1)
+          and_table(letra1, letra2)
+        elsif (conectivo == 2)
+          or_table(letra1, letra2)
+        elsif (conectivo == 3)
+          if_table(letra1, letra2)
+        elsif (conectivo == 4)
+          only_if_table(letra1, letra2)
+        end
+      else
+        conectivo = prepos[2]
+        letra1 = true
+        letra2 = false
+        if (conectivo == 1)
+          and_table(letra1, letra2)
+        elsif (conectivo == 2)
+          or_table(letra1, letra2)
+        elsif (conectivo == 3)
+          if_table(letra1, letra2)
+        elsif (conectivo == 4)
+          only_if_table(letra1, letra2)
+        end
+      end
+    end    
   end
 end
