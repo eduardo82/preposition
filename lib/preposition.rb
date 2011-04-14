@@ -6,20 +6,60 @@ class Preposition
     
   end
 
-  def and_table
-
+  def and_table(letra1, letra2)
+    vector = Array.new
+    if letra1 == false && letra2 == true
+      vector = ['F','F','V','F']
+    elsif letra1 == true && letra2 == false
+      vector = ['F','V','F','V']
+    elsif letra1 == false && letra2 == false
+      vector = ['F','F','F','V']
+    elsif letra1 == true && letra2 == true
+      vector = ['F','F','F','F']
+    end
+    return vector
   end
 
-  def or_table
-
+  def or_table(letra1, letra2)
+    vector = Array.new
+    if letra1 == false && letra2 == true
+      vector = ['V','F','V','V']
+    elsif letra1 == true && letra2 == false
+      vector = ['V','V','F','V']
+    elsif letra1 == false && letra2 == false
+      vector = ['F','V','V','V']
+    elsif letra1 == true && letra2 == true
+      vector = ['V','V','V','F']
+    end
+    return vector
   end
 
-  def if_table
-
+  def if_table(letra1, letra2)
+    vector = Array.new
+    if letra1 == false && letra2 == true
+      vector = ['V','V','V','F']
+    elsif letra1 == true && letra2 == false
+      vector = ['F','V','V','V']
+    elsif letra1 == false && letra2 == false
+      vector = ['V','V','F','V']
+    elsif letra1 == true && letra2 == true
+      vector = ['V','F','V','V']
+    end
+    return vector
   end
 
-  def only_if_table
-
+  def only_if_table(letra1, letra2)
+    vector = Array.new
+    if letra1 == false && letra2 == true
+      vector = ['F','V','V','F']
+    elsif letra1 == true && letra2 == false
+      vector = ['F','V','V','F']
+    elsif letra1 == false && letra2 == false
+      vector = ['V','F','F','V']
+    elsif letra1 == true && letra2 == true
+      vector = ['V','F','F','V']
+    end    
+    return vector
   end
 
   def tautologia?(vector)
@@ -88,23 +128,19 @@ class Preposition
         if $tab_token[count-2] =~ /[1-4]/ && $tab_token[count-4] == '(' && $tab_token[count-3] =~ /[a-zA-Z]/  #If com as duas letras positivas          
           teste = $tab_token.slice!(count-4..count)
           count-= teste.size
-          aux_tab[aux_count] = teste
-          calc_one_prepo(teste)
+          aux_tab[aux_count] = calc_one_prepo(teste)
         elsif $tab_token[count-5] == '~' && $tab_token[count-3] =~ /[1-4]/  #If as duas letras são negativas
           teste = $tab_token.slice!(count-6..count)
           count-= teste.size
-          aux_tab[aux_count] = teste
-          calc_one_prepo(teste)
+          aux_tab[aux_count] = calc_one_prepo(teste)
         elsif $tab_token[count-4] == '~' && $tab_token[count-2] =~ /[1-4]/  && $tab_token[count-3]=~ /[a-zA-Z]/ #If primeira letra negativa e segunda letra é positiva
           teste = $tab_token.slice!(count-5..count)
           count-= teste.size
-          aux_tab[aux_count] = teste
-          calc_one_prepo(teste)
+          aux_tab[aux_count] = calc_one_prepo(teste)
         elsif $tab_token[count-5] == '(' && $tab_token[count-3] =~ /[1-4]/ && $tab_token[count-4]=~ /[a-zA-Z]/#If com segunda letra negativa e primeira positiva          
           teste = $tab_token.slice!(count-5..count)
           count-= teste.size
-          aux_tab[aux_count] = teste
-          calc_one_prepo(teste)
+          aux_tab[aux_count] = calc_one_prepo(teste)
         elsif $tab_token[count-1] =~ /[1-4]/ && $tab_token[count-4] == '(' && $tab_token[count-3]=='~'#If letra negativa e operacao a direita
           aux_conec[aux_conec_count] =  $tab_token[count-1]
           teste = $tab_token.slice!(count-4..count)
@@ -151,72 +187,105 @@ class Preposition
     puts("AUX_TAB -> #{aux_tab}")
     puts("TABTOKEN -> #{$tab_token}")
     puts("AUX_CONEC -> #{aux_conec}")
+    until aux_tab.length == 1
+      aux_tab[0] = calc_table_table(aux_tab[0], aux_tab[1], aux_conec[0])
+      aux_tab.slice!(1)
+      aux_conec.slice!(0)
+    end
     
-    if tautologia?(aux_tab[1])
+    if tautologia?(aux_tab[0])
       puts("TAUTOLOGIA")
-    elsif contradicao?(aux_tab[1])
+    elsif contradicao?(aux_tab[0])
       puts("CONTRADICAO")
-    elsif factivel?(aux_tab[1])
+    elsif factivel?(aux_tab[0])
       puts("FACTIVEL")
     end
   end
 
-  def calc_one_prepo(prepos)    
+  def calc_one_prepo(prepos)
+    vector = Array.new
     conectivo = nil
-    if prepos.length == 7
+    if prepos.length == 7      
       conectivo = prepos[3]
       letra1 = false
-        letra2 = false
-      if (conectivo == 1)
-        and_table(letra1, letra2)
-      elsif (conectivo == 2)
-        or_table(letra1, letra2)
-      elsif (conectivo == 3)
-        if_table(letra1, letra2)
-      elsif (conectivo == 4)
-        only_if_table(letra1, letra2)
+      letra2 = false
+      if (conectivo == '1')
+        puts(and_table(letra1,letra2))
+        vector = and_table(letra1, letra2)
+      elsif (conectivo == '2')
+        vector = or_table(letra1, letra2)        
+      elsif (conectivo == '3')
+        vector = if_table(letra1, letra2)
+      elsif (conectivo == '4')
+        vector = only_if_table(letra1, letra2)
       end
-    elsif prepos.length == 5
+    elsif prepos.length == 5      
       conectivo = prepos[2]
       letra1 = true
       letra2 = true
-      if (conectivo == 1)
-        and_table(letra1, letra2)
-      elsif (conectivo == 2)
-        or_table(letra1, letra2)
-      elsif (conectivo == 3)
-        if_table(letra1, letra2)
-      elsif (conectivo == 4)
-        only_if_table(letra1, letra2)
+      if (conectivo == '1')
+        vector = and_table(letra1, letra2)
+      elsif (conectivo == '2')
+        vector = or_table(letra1, letra2)
+      elsif (conectivo == '3')
+        vector = if_table(letra1, letra2)
+      elsif (conectivo == '4')
+        vector = only_if_table(letra1, letra2)
       end
-    elsif prepos.length == 6
-      if (prepos[1] == "~")
+    elsif prepos.length == 6      
+      if (prepos[1] == "~")        
         conectivo = prepos[3]
         letra1 = false
         letra2 = true
-        if (conectivo == 1)
-          and_table(letra1, letra2)
-        elsif (conectivo == 2)
-          or_table(letra1, letra2)
-        elsif (conectivo == 3)
-          if_table(letra1, letra2)
-        elsif (conectivo == 4)
-          only_if_table(letra1, letra2)
+        if (conectivo == '1')
+          vector =   and_table(letra1, letra2)
+        elsif (conectivo == '2')
+          vector =   or_table(letra1, letra2)
+        elsif (conectivo == '3')
+          vector =   if_table(letra1, letra2)
+        elsif (conectivo == '4')
+          vector =   only_if_table(letra1, letra2)
         end
-      else
+      else        
         conectivo = prepos[2]
         letra1 = true
         letra2 = false
-        if (conectivo == 1)
-          and_table(letra1, letra2)
-        elsif (conectivo == 2)
-          or_table(letra1, letra2)
-        elsif (conectivo == 3)
-          if_table(letra1, letra2)
-        elsif (conectivo == 4)
-          only_if_table(letra1, letra2)
+        if (conectivo == '1')
+          vector =   and_table(letra1, letra2)
+        elsif (conectivo == '2')
+          vector =   or_table(letra1, letra2)
+        elsif (conectivo == '3')
+          vector =   if_table(letra1, letra2)
+        elsif (conectivo == '4')
+          vector =   only_if_table(letra1, letra2)
         end
       end
-    end    
+    end
+    return vector
+  end
+
+  def calc_table_table(vector1, vector2, conectivo)
+    aux_vector = Array.new    
+    if conectivo == 1
+      for aux_count in (0..3) do
+        if vector1[aux_count] == 'F' || vector2[aux_count] == 'F'
+          aux_vector[aux_count] = 'F'
+        else
+          aux_vector[aux_count] = 'V'
+        end
+      end
+    elsif conectivo == 2
+      for aux_count1 in (0..3) do
+        if vector1[aux_count1] == 'V' || vector2[aux_count1] == 'V'
+          aux_vector[aux_count1] = 'V'
+        else
+          aux_vector[aux_count1] = 'F'
+        end
+      end
+    elsif conectivo == 3
+    elsif conectivo == 4
+    end
+    puts(aux_vector)
+    return aux_vector
   end
 end
