@@ -22,16 +22,44 @@ class Preposition
 
   end
 
-  def tautologia?
+  def tautologia?(vector)
+    for i in vector
+      if i == 'V'
+        aux+=1
+      end
+    end
+    if aux==4
+      return true
+    else
+      return false
+    end
 
   end
 
-  def contradicao?
-
+  def contradicao?(vector)
+    for i in vector
+      if i == 'F'
+        aux+=1
+      end
+    end
+    if aux==4
+      return true
+    else
+      return false
+    end
   end
 
-  def factivel?
-
+  def factivel?(vector)
+    for i in vector
+      if i == 'V'
+        aux+=1
+      end
+    end
+    if aux>=1 && aux < 4
+      return true
+    else
+      return false
+    end
   end
 
   def calculo_prepo
@@ -113,8 +141,19 @@ class Preposition
         count+=1
       end #end if (')')
     end #end while
-    puts("AUX_TAB -> #{aux_tab}")
+    puts("AUX_TAB -> #{aux_tab[1]}")
     puts("TABTOKEN -> #{$tab_token}")
     puts("AUX_CONEC -> #{aux_conec}")
+    if tautologia?(aux_tab[1])
+      puts("TAUTOLOGIA")
+    elsif contradicao?(aux_tab[1])
+      puts("CONTRADICAO")
+    elsif factivel?(aux_tab[1])
+      puts("FACTIVEL")
+    end
+  end
+
+  def prepo(prepos)
+
   end
 end
