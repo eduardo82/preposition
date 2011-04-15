@@ -3,7 +3,10 @@
 
 class Preposition
   def initialize
-    
+    puts("ENTRE COM A PREPOSICAO A SER PROCESSADA")
+    prepo = STDIN.gets()
+    prepo.chomp!    
+    calculo_prepo(prepo)
   end
 
   def and_table(letra1, letra2)
@@ -105,17 +108,17 @@ class Preposition
     end
   end
 
-  def calculo_prepo
+  def calculo_prepo(preposicao)
     array = "( ~ p 1 ( t 2 ( ~ p 1 ~ p ) ) )" #( p 1 ( ~ t 2 ) )
     array2 = "( p 2 ( ( ~ p 1 q ) 3 ~ p ) )" #( ( 3 ~ p ) 2 p )
-    array3 = "( ( p 1 ( r 3 ~ q ) ) 2 q )" # ( ( p 1 ) 2 q )
-    array4 = "( ( r 3 q ) 3 w )" #( 3 w )
+    array3 = "( ( p 3 ( r 3 ~ q ) ) 3 q )" # ( ( p 1 ) 2 q )
+    array4 = "( ( r 2 q ) 1 ~ w )" #( 3 w )
     array5 = "( w 3 ( r 3 q ) )" #( w 3 )
-    array6 = "( r 1 ~ q )"
+    array6 = "( ( r 1 ~ q ) 2 p )"
     array7 = "( ~ w 3 ( r 3 q ) )" #( ~ w 3 )
     array8 = "( ( r 3 q ) 3 ~ w )" #( 3 ~ w )
 
-    $tab_token = array3.split
+    $tab_token = preposicao.split
     count=0
     i=0
     aux_tab = Array.new
@@ -185,14 +188,13 @@ class Preposition
       end #end if (')')
     end #end while
     puts("AUX_TAB -> #{aux_tab}")
-    puts("TABTOKEN -> #{$tab_token}")
-    puts("AUX_CONEC -> #{aux_conec}")
+    aux_conec.compact!
     until aux_tab.length == 1
-      aux_tab[0] = calc_table_table(aux_tab[0], aux_tab[1], aux_conec[0])
+      aux_tab[0] = calc_table_table(aux_tab[0], aux_tab[1], aux_conec[0])      
       aux_tab.slice!(1)
-      aux_conec.slice!(0)
+      aux_conec.slice!(0)      
     end
-    
+    puts("TABELA FINAL -> #{aux_tab}")
     if tautologia?(aux_tab[0])
       puts("TAUTOLOGIA")
     elsif contradicao?(aux_tab[0])
@@ -209,8 +211,7 @@ class Preposition
       conectivo = prepos[3]
       letra1 = false
       letra2 = false
-      if (conectivo == '1')
-        puts(and_table(letra1,letra2))
+      if (conectivo == '1')   
         vector = and_table(letra1, letra2)
       elsif (conectivo == '2')
         vector = or_table(letra1, letra2)        
@@ -266,7 +267,7 @@ class Preposition
 
   def calc_table_table(vector1, vector2, conectivo)
     aux_vector = Array.new    
-    if conectivo == 1
+    if conectivo == '1'
       for aux_count in (0..3) do
         if vector1[aux_count] == 'F' || vector2[aux_count] == 'F'
           aux_vector[aux_count] = 'F'
@@ -274,7 +275,7 @@ class Preposition
           aux_vector[aux_count] = 'V'
         end
       end
-    elsif conectivo == 2
+    elsif conectivo == '2'
       for aux_count1 in (0..3) do
         if vector1[aux_count1] == 'V' || vector2[aux_count1] == 'V'
           aux_vector[aux_count1] = 'V'
@@ -282,10 +283,29 @@ class Preposition
           aux_vector[aux_count1] = 'F'
         end
       end
-    elsif conectivo == 3
-    elsif conectivo == 4
-    end
-    puts(aux_vector)
+    elsif conectivo == '3'
+      for aux_count2 in (0..3) do
+        if vector1[aux_count2] == 'V' && vector2[aux_count2] == 'V'
+          aux_vector[aux_count2] = 'V'
+        elsif vector1[aux_count2] == 'F' && vector2[aux_count2] == 'F'
+          aux_vector[aux_count2] = 'V'
+        elsif vector1[aux_count2] == 'V' && vector2[aux_count2] == 'F'
+          aux_vector[aux_count2] = 'F'
+        elsif vector1[aux_count2] == 'F' && vector2[aux_count2] == 'V'
+          aux_vector[aux_count2] = 'V'
+        end
+      end
+    elsif conectivo == '4'
+      for aux_count3 in (0..3) do
+        if vector1[aux_count3] == 'V' && vector2[aux_count3] == 'V'
+          aux_vector[aux_count3] = 'V'
+        elsif vector1[aux_count3] == 'F' && vector2[aux_count3] == 'F'
+          aux_vector[aux_count3] = 'V'
+        elsif vector1[aux_count3] == 'F' || vector2[aux_count3] == 'F'
+          aux_vector[aux_count3] = 'F'
+        end
+      end
+    end    
     return aux_vector
   end
 end
